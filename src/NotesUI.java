@@ -1,9 +1,11 @@
 package src;
 
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -13,6 +15,7 @@ public class NotesUI {
 		
 		//Initializing the window
 		JFrame frame = new JFrame("My First GUI");
+		frame.setTitle("Notes App");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(640,480);
 	    
@@ -22,7 +25,7 @@ public class NotesUI {
 	    importBtn.addActionListener(
 	    		new ActionListener() {
 	    				public void actionPerformed(ActionEvent e) {
-	    					ImportFile();
+	    					ImportFile(frame);
 	    				}
 	    			}
 	    		);
@@ -49,18 +52,35 @@ public class NotesUI {
 	    JMenuBar menuBar = new JMenuBar();
 	    menuBar.add(fileBtn);
 	    
-	    //Creating the main application panel
-	    JPanel panel = new JPanel();
-
 	    //Adding the menu to the window
 	    frame.getContentPane().add(BorderLayout.NORTH,menuBar);
-	    frame.getContentPane().add(BorderLayout.SOUTH,panel);
 	    frame.setVisible(true);	
 	}
 	
 	//Backend functionality here
-	static void ImportFile() {
+	static void ImportFile(JFrame frame) {
+		FileDialog fileDialog = new FileDialog(frame,"Select a file",FileDialog.LOAD);
+		fileDialog.setDirectory(System.getProperty("user.dir"));
+		fileDialog.setFile(".txt");
+		fileDialog.setVisible(true);
 		
+		File file = new File(fileDialog.getDirectory()+"\\"+fileDialog.getFile());		
+		char[] buffer = new char[(int)file.length()];
+
+		try {
+			FileReader reader = new FileReader(file);
+			reader.read(buffer);
+			reader.close();
+			
+			String text = new String(buffer);
+			JTextArea textArea = new JTextArea(text);
+		    frame.getContentPane().add(textArea);
+		    frame.revalidate();			
+		} 
+		catch (IOException e) {
+			System.out.println(fileDialog.getFile());
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	static void SaveFile() {
